@@ -99,7 +99,7 @@ To create a centralized, transparent, and scalable platform that seamlessly inte
 
 ## MoSCoW Prioritization
 
-## Must Have
+### Must Have
 - Query submission and response
 - Multi-agent routing
 - Agent execution sandbox
@@ -107,20 +107,20 @@ To create a centralized, transparent, and scalable platform that seamlessly inte
 - Logging system
 - Dockerized deployment
 
-## Should Have
+### Should Have
 - Aggregated responses
 - Performance metrics
 - Admin dashboard
 - Execution history
 - GitHub repository linking
 
-## Could Have
+### Could Have
 - Advanced analytics dashboards
 - Auto-scaling agents
 - Agent ranking
 - Alerting system
 
-## Won’t Have (for this phase)
+### Won’t Have (for this phase)
 - Paid integrations
 - Enterprise authentication
 - Real-time streaming responses
