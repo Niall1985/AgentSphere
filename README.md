@@ -56,17 +56,17 @@ To create a centralized, transparent, and scalable platform that seamlessly inte
 ---
 
 ## Technology Stack
-###  Layer	                    Technology
+###  Layer	                ### Technology
     - Frontend	                React / Next.js
-    - Backend	                  Node.js / Python (FastAPI)
-    - Agent Execution	          Docker
+    - Backend	                Node.js / Python (FastAPI)
+    - Agent Execution	        Docker
     - Evaluation Engine	        Python
     - Database	                PostgreSQL / MongoDB
     - Logging & Monitoring	    Prometheus / Grafana
-    - Version Control	          GitHub
+    - Version Control	        GitHub
     - CI/CD	                    GitHub Actions
     - Containerization	        Docker
-    - Project Management	      GitHub Projects
+    - Project Management	    GitHub Projects
     
 ---
 
