@@ -56,7 +56,6 @@ To create a centralized, transparent, and scalable platform that seamlessly inte
 ---
 
 ## Technology Stack
-###  Layer	                ### Technology
     - Frontend	                React / Next.js
     - Backend	                Node.js / Python (FastAPI)
     - Agent Execution	        Docker
