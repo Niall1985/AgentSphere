@@ -171,3 +171,12 @@ AgentSphere is containerized using Docker to ensure consistent execution environ
 ### Build the Docker Image
 ```bash
 docker build -t agentsphere .
+```
+
+### Software Design
+
+- AgentSphere follows a modular layered architecture that separates user interaction, agent execution, and evaluation workflows. The system is   designed with high cohesion and low coupling to support scalability and safe execution of third-party agents.
+
+- Key design choices include sandboxed agent runtime, Git-based repository integration, and distinct workflows for agent users and developers. These decisions improve maintainability, security, and extensibility of the platform.
+
+![Alt text](design\System_Architecture.png)
