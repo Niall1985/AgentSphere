@@ -179,4 +179,4 @@ docker build -t agentsphere .
 
 - Key design choices include sandboxed agent runtime, Git-based repository integration, and distinct workflows for agent users and developers. These decisions improve maintainability, security, and extensibility of the platform.
 
-![Alt text](design\System_Architecture.png)
+![Alt text](design/System_Architecture.png)
