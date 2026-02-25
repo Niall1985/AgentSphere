@@ -15,6 +15,26 @@ interface Message {
   timestamp: Date;
 }
 
+
+const sendMessageToBackend = async (message: string) => {
+  const res = await fetch("http://localhost:8000/code-assist", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      message,
+      session_id: "default_session",
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch response from backend");
+  }
+
+  return res.json();
+};
+
 export function AgentInteractionScreen({ onNavigate, agentName }: AgentInteractionScreenProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -28,6 +48,21 @@ export function AgentInteractionScreen({ onNavigate, agentName }: AgentInteracti
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+   useEffect(() => {
+  const savedMessages = localStorage.getItem(`chat_${agentName}`);
+  if (savedMessages) {
+    const parsed = JSON.parse(savedMessages).map((msg: Message) => ({
+      ...msg,
+      timestamp: new Date(msg.timestamp)
+    }));
+    setMessages(parsed);
+  }
+}, [agentName]);
+
+  useEffect(() => {
+    localStorage.setItem(`chat_${agentName}`, JSON.stringify(messages));
+  }, [messages, agentName]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -40,11 +75,13 @@ export function AgentInteractionScreen({ onNavigate, agentName }: AgentInteracti
     e.preventDefault();
     if (!input.trim()) return;
 
+    const currentInput = input;
+
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input,
+      content: currentInput,
       timestamp: new Date()
     };
 
@@ -52,17 +89,32 @@ export function AgentInteractionScreen({ onNavigate, agentName }: AgentInteracti
     setInput('');
     setIsTyping(true);
 
-    // Simulate agent response
-    setTimeout(() => {
-      const agentMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'agent',
-        content: `I understand you're asking about "${input}". As ${agentName}, I can help you with that. This is a demonstration of the interaction interface. In a production environment, this would connect to the actual AI agent backend.`,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, agentMessage]);
-      setIsTyping(false);
-    }, 1500);
+    /* ✅ ADDED: Real backend call instead of simulation */
+    (async () => {
+      try {
+        const data = await sendMessageToBackend(currentInput);
+
+        const agentMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'agent',
+          content: data.response,
+          timestamp: new Date()
+        };
+
+        setMessages(prev => [...prev, agentMessage]);
+      } catch (error) {
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'agent',
+          content: "Error connecting to backend.",
+          timestamp: new Date()
+        };
+
+        setMessages(prev => [...prev, errorMessage]);
+      } finally {
+        setIsTyping(false);
+      }
+    })();
   };
 
   return (
@@ -113,9 +165,21 @@ export function AgentInteractionScreen({ onNavigate, agentName }: AgentInteracti
                     : 'glass-card'
                 }`}
               >
-                <p className={message.role === 'user' ? 'text-black' : 'text-white'}>
+                {/* <p className={message.role === 'user' ? 'text-black' : 'text-white'}>
                   {message.content}
-                </p>
+                </p> */}
+                {message.role === 'agent' ? (
+                  <pre className="overflow-x-auto whitespace-pre-wrap text-sm">
+                    <code className="text-white">
+                      {message.content}
+                    </code>
+                  </pre>
+                ) : (
+                  <p className="text-black">
+                    {message.content}
+                  </p>
+                )}
+
                 <p className={`text-xs mt-2 ${
                   message.role === 'user' ? 'text-black/70' : 'text-[#a3a3a3]'
                 }`}>
