@@ -95,7 +95,7 @@ export function AgentSelectionScreen({ onNavigate }: AgentSelectionScreenProps) 
               return (
                 <button
                   key={agent.id}
-                  onClick={() => onNavigate('agent-interaction', agent.name)}
+                  onClick={() => onNavigate('agent-interaction', agent.id)}
                   className={`group glass-card rounded-2xl p-6 text-left transition-all duration-300 hover:scale-105 ${
                     isActive ? 'hover:glow-white' : 'hover:glow-gray'
                   } ${!isActive ? 'opacity-80' : ''}`}

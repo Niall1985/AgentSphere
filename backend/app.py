@@ -2,36 +2,45 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from tools.llm_tool import llm_model
 from tools.memory_tool import add_message, get_memory
+
+from agents import codeAssistAgent
+from agents import researchAgent
+from agents import dataAnalysisAgent
 
 app = FastAPI()
 
-# ✅ Allow frontend to connect
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, restrict this
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Request body structure
 class ChatRequest(BaseModel):
+    agent: str
     message: str
     session_id: str
 
-# Response route
-@app.post("/code-assist")
-def code_assist(req: ChatRequest):
+AGENT_MAP = {
+    "code-assist": codeAssistAgent.run,
+    # "research_agent": researchAgent.run,
+    # "data_analysis_agent": dataAnalysisAgent.run,
+}
 
-    # Get previous memory
+@app.post("/agent")
+def route_agent(req: ChatRequest):
+
     history = get_memory(req.session_id)
 
-    # Generate response
-    response = llm_model(history, req.message)
+    agent_function = AGENT_MAP.get(req.agent)
 
-    # Store conversation
+    if not agent_function:
+        return {"response": "Unknown agent."}
+
+    response = agent_function(history, req.message)
+
     add_message(req.session_id, "user", req.message)
     add_message(req.session_id, "assistant", response)
 

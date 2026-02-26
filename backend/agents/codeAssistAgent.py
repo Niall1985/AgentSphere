@@ -1,20 +1,13 @@
 from tools.llm_tool import llm_model
-from tools.memory_tool import add_message, get_memory
 
-def codeAssist():
-    session_id = "default_session"
+SYSTEM_PROMPT = """
+You are a strict code execution assistant.
+Only return the final result.
+Do not add explanations unless explicitly asked.
+If the user does not mention anything about input/output,
+you write the code to take inputs, perfrom the logic,
+and write the code to display the output.
+"""
 
-    while True:
-        query = input("Enter Query (type 'exit' to stop): ")
-
-        if query.lower() == "exit":
-            break
-
-        history = get_memory(session_id)
-
-        response = llm_model(history, query)
-
-        add_message(session_id, "user", query)
-        add_message(session_id, "assistant", response)
-
-        print("\nAssistant:", response)
+def run(history, message):
+    return llm_model(history, message, SYSTEM_PROMPT)

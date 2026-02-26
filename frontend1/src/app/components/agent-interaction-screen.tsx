@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Sparkles, Send, Bot, User, Loader2 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
+import hljs from "highlight.js";
+import "highlight.js/styles/atom-one-dark.css";
 
 interface AgentInteractionScreenProps {
   onNavigate: (screen: string) => void;
@@ -16,15 +18,16 @@ interface Message {
 }
 
 
-const sendMessageToBackend = async (message: string) => {
-  const res = await fetch("http://localhost:8000/code-assist", {
+const sendMessageToBackend = async (agentName: string, message: string) => {
+  const res = await fetch("http://localhost:8000/agent", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
+      agent: agentName,
       message,
-      session_id: "default_session",
+      session_id: `session_${agentName}`,
     }),
   });
 
@@ -75,6 +78,12 @@ export function AgentInteractionScreen({ onNavigate, agentName }: AgentInteracti
     e.preventDefault();
     if (!input.trim()) return;
 
+    if (input.trim() === "/clear"){
+      setMessages([]);
+      localStorage.removeItem(`chat_${agentName}`);
+      setInput("");
+      return;
+    }
     const currentInput = input;
 
     // Add user message
@@ -89,11 +98,10 @@ export function AgentInteractionScreen({ onNavigate, agentName }: AgentInteracti
     setInput('');
     setIsTyping(true);
 
-    /* ✅ ADDED: Real backend call instead of simulation */
     (async () => {
       try {
-        const data = await sendMessageToBackend(currentInput);
-
+        const data = await sendMessageToBackend(agentName, currentInput);
+        console.log("Agent name", agentName)
         const agentMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: 'agent',
@@ -169,16 +177,23 @@ export function AgentInteractionScreen({ onNavigate, agentName }: AgentInteracti
                   {message.content}
                 </p> */}
                 {message.role === 'agent' ? (
-                  <pre className="overflow-x-auto whitespace-pre-wrap text-sm">
-                    <code className="text-white">
-                      {message.content}
-                    </code>
-                  </pre>
-                ) : (
-                  <p className="text-black">
+                <pre className="overflow-x-auto text-sm rounded-lg p-4 bg-[#1e1e1e]">
+                  <code
+                    ref={(el) => {
+                      if (el) {
+                        hljs.highlightElement(el);
+                      }
+                    }}
+                    className="text-white"
+                  >
                     {message.content}
-                  </p>
-                )}
+                  </code>
+                </pre>
+              ) : (
+                <p className="text-black">
+                  {message.content}
+                </p>
+              )}
 
                 <p className={`text-xs mt-2 ${
                   message.role === 'user' ? 'text-black/70' : 'text-[#a3a3a3]'

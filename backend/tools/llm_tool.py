@@ -6,16 +6,11 @@ from typing import List, Dict
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-model = genai.GenerativeModel(
-    model_name="gemini-2.5-flash",
-    system_instruction="""
-You are a strict code execution assistant.
-Only return the final result.
-Do not add explanations unless explicitly asked.
-"""
-)
-
-def llm_model(history: List[Dict], user_message: str) -> str:
+def llm_model(
+    history: List[Dict],
+    user_message: str,
+    system_instruction: str
+) -> str:
     """
     history format:
     [
@@ -23,6 +18,11 @@ def llm_model(history: List[Dict], user_message: str) -> str:
         {"role": "assistant", "content": "..."}
     ]
     """
+
+    model = genai.GenerativeModel(
+        model_name="gemini-2.5-flash",
+        system_instruction=system_instruction
+    )
 
     formatted_history = []
 
