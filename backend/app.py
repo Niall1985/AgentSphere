@@ -25,7 +25,7 @@ class ChatRequest(BaseModel):
 
 AGENT_MAP = {
     "code-assist": codeAssistAgent.run,
-    # "research_agent": researchAgent.run,
+    "research": researchAgent.run,
     # "data_analysis_agent": dataAnalysisAgent.run,
 }
 

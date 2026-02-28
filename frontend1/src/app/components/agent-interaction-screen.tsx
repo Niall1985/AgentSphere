@@ -78,13 +78,23 @@ export function AgentInteractionScreen({ onNavigate, agentName }: AgentInteracti
     e.preventDefault();
     if (!input.trim()) return;
 
-    if (input.trim() === "/clear"){
-      setMessages([]);
-      localStorage.removeItem(`chat_${agentName}`);
+    if (input.trim() === "/clear") {
+      setMessages(prev => {
+        const firstMessage = prev[0];   // keep initial greeting
+        const newMessages = firstMessage ? [firstMessage] : [];
+        
+        localStorage.setItem(
+          `chat_${agentName}`,
+          JSON.stringify(newMessages)
+        );
+
+        return newMessages;
+      });
+
       setInput("");
       return;
     }
-    const currentInput = input;
+        const currentInput = input;
 
     // Add user message
     const userMessage: Message = {
