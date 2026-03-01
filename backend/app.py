@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from tools.memory_tool import add_message, get_memory
 from agents import codeAssistAgent, researchAgent
 
-from authfiles.auth_service import generate_otp_service, verify_signup_service
+from authfiles.auth_service import generate_otp_service, verify_signup_service, login_user
 
 app = FastAPI()
 
@@ -30,6 +30,10 @@ class OTPRequest(BaseModel):
 class VerifySignupRequest(BaseModel):
     email: str
     otp: str
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
 AGENT_MAP = {
     "code-assist": codeAssistAgent.run,
@@ -64,3 +68,9 @@ def verify_signup(req: VerifySignupRequest):
         return verify_signup_service(req.email, req.otp)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/login")
+def login(req: LoginRequest):
+    email = req.email
+    password = req.password
+    return login_user(email, password)

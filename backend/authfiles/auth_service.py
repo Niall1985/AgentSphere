@@ -7,6 +7,7 @@ from email.mime.text import MIMEText
 from dotenv import load_dotenv
 from fastapi import HTTPException
 from passlib.hash import bcrypt
+from passlib.context import CryptContext
 
 load_dotenv()
 
@@ -34,7 +35,7 @@ def generate_otp_service(email: str, password: str):
 
     OTP_STORE[email] = {
         "otp": otp,
-        "password": bcrypt.hash(password),  # HASH password immediately
+        "password": bcrypt.hash(password),  
         "timestamp": time.time()
     }
 
@@ -101,3 +102,25 @@ def send_email(to_email: str, otp: str):
         server.quit()
     except Exception as e:
         raise HTTPException(status_code=500, detail="Failed to send email")
+    
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def login_user(email: str, password: str):
+
+    try:
+        with open(USERS_DB, "r") as f:
+            users = json.load(f)
+    except:
+        raise HTTPException(status_code=400, detail="User database not found")
+
+    user = next((u for u in users if u["email"] == email), None)
+
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+
+    if not pwd_context.verify(password, user["password"]):
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+
+    return {"message": "Login successful"}

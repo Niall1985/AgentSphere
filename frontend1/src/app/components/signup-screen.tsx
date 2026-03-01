@@ -200,6 +200,23 @@ export function SignupScreen({ onNavigate }: SignupScreenProps) {
             )}
           </form>
         </div>
+        <p className="text-center mt-6 text-[#a3a3a3]">
+          Already have an account?{" "}
+          <button
+            onClick={() => onNavigate("login")}
+            className="text-white hover:text-[#a3a3a3]"
+          >
+            Login
+          </button>
+        </p>
+        <p className="text-center mt-6 text-[#a3a3a3]">
+          <button
+            onClick={() => onNavigate("landing")}
+            className="text-white hover:text-[#a3a3a3]"
+          >
+            Back to Landing Page
+          </button>
+        </p>
       </div>
     </div>
   );
