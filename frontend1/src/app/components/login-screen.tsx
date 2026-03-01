@@ -128,7 +128,7 @@ export function LoginScreen({ onNavigate }: LoginScreenProps) {
         <p className="text-center mt-6 text-[#a3a3a3]">
           Don't have an account?{' '}
           <button 
-            onClick={() => onNavigate('landing')}
+            onClick={() => onNavigate('signup')}
             className="text-white hover:text-[#a3a3a3] transition-colors"
           >
             Sign up

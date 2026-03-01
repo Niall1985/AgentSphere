@@ -55,7 +55,7 @@ export function LandingScreen({ onNavigate }: LandingScreenProps) {
             Login
           </Button>
           <Button 
-            onClick={() => onNavigate('login')}
+            onClick={() => onNavigate('signup')}
             variant="outline"
             className="px-8 py-6 text-lg rounded-xl glass-card border-white/20 text-white hover:bg-white/10 hover:border-white/40 glow-gray transition-all duration-300 hover:scale-105"
           >

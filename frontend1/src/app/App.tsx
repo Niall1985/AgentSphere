@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { LandingScreen } from '@/app/components/landing-screen';
 import { LoginScreen } from '@/app/components/login-screen';
+import { SignupScreen } from '@/app/components/signup-screen';
 import { ModeSelectionScreen } from '@/app/components/mode-selection-screen';
 import { AgentSelectionScreen } from '@/app/components/agent-selection-screen';
 import { AgentInteractionScreen } from '@/app/components/agent-interaction-screen';
 import { AgentTestingScreen } from '@/app/components/agent-testing-screen';
 
-type Screen = 'landing' | 'login' | 'mode-selection' | 'agent-selection' | 'agent-interaction' | 'agent-testing';
+type Screen = 'landing' | 'login' | 'signup' | 'mode-selection' | 'agent-selection' | 'agent-interaction' | 'agent-testing';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('landing');
@@ -26,6 +27,9 @@ export default function App() {
       )}
       {currentScreen === 'login' && (
         <LoginScreen onNavigate={handleNavigate} />
+      )}
+      {currentScreen === 'signup' && (
+        <SignupScreen onNavigate={handleNavigate} />
       )}
       {currentScreen === 'mode-selection' && (
         <ModeSelectionScreen onNavigate={handleNavigate} />
