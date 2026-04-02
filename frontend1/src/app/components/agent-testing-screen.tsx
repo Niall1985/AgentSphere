@@ -440,7 +440,7 @@ export function AgentTestingScreen({ onNavigate }: AgentTestingScreenProps) {
     setExpandedFolders(newExpanded);
   };
 
-  const runTests = async () => {
+  const runTests = () => {
 
     if (!repoUrl) {
       alert("Please enter a repository URL");
@@ -454,32 +454,54 @@ export function AgentTestingScreen({ onNavigate }: AgentTestingScreenProps) {
 
     setLoading(true);
 
-    try {
+    const token = localStorage.getItem("token"); // simple session id
 
-      const res = await fetch("http://localhost:8000/test-agent", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          repo_url: repoUrl
-        })
-      });
+    const url =
+  "http://localhost:8000/test-agent/stream?" +
+  "repo_url=" + encodeURIComponent(repoUrl) +
+  "&token=" + encodeURIComponent(token || "");
+    const es = new EventSource(url);
 
-      const data = await res.json();
+    es.onmessage = (event) => {
 
-      console.log("Backend response:", data);
+      const data = JSON.parse(event.data);
 
-      setMetrics(data.metrics || {});
-      setPerformanceData(data.performance || []);
-      setTestCaseData(data.tests || []);
-      setLogs(data.logs || []);
+      console.log("Stream event:", data);
 
-    } catch (err) {
-      console.error("Testing failed", err);
-    }
+      if (data.type === "log") {
 
-    setLoading(false);
+        setLogs(prev => [...prev, data]);
+
+      } else if (data.type === "performance") {
+
+        setPerformanceData(prev => [...prev, data.payload]);
+
+      } else if (data.type === "tests") {
+
+        setTestCaseData(data.payload);
+
+      } else if (data.type === "result") {
+
+        setMetrics(data.metrics);
+        setLoading(false);
+        es.close();
+
+      } else if (data.type === "error") {
+
+        console.error(data.message);
+        setLoading(false);
+        es.close();
+
+      }
+
+    };
+
+    es.onerror = () => {
+      console.error("EventSource failed");
+      setLoading(false);
+      es.close();
+    };
+
   };
 
   return (

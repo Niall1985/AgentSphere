@@ -3,3 +3,4 @@ frontend1/node_modules
 test_runs/
 textfile.txt
 *.json
+sec.py
