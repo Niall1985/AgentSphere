@@ -1,10 +1,13 @@
 from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from tools.memory_tool import add_message, get_memory
 from agents import codeAssistAgent, researchAgent
+from agents import codeAssistAgent, researchAgent
 
+from authfiles.auth_service import generate_otp_service, verify_signup_service, login_user
 from authfiles.auth_service import generate_otp_service, verify_signup_service, login_user
 
 from agent_test.orcherstrator import run_agent_tests
@@ -12,6 +15,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=["*"],
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],

@@ -1,5 +1,4 @@
 frontend1/node_modules
 .env
-textfile.txt
-backend/authfiles/db.json
 test_runs/
+textfile.txt
