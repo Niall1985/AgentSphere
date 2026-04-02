@@ -1,8 +1,8 @@
 from serpapi import GoogleSearch
 import os
 from dotenv import load_dotenv
-from fetch_url_content import fetch_page_content
-from summarizer_tool import summarizer_func
+from tools.fetch_url_content import fetch_page_content
+from tools.summarizer_tool import summarizer_func
 load_dotenv()
 
 def serp_search(query: str) -> list:
@@ -41,14 +41,15 @@ def scholar_search(query: str) -> list:
 
     return scholar_content
 
-query = "I want to conduct research on retrieval Augmented Generation"
+# query = "I want to conduct research on retrieval Augmented Generation"
 
-searches = serp_search(query)
-print("Searches: ", searches)
-print("\n")
-scholar_res = scholar_search(query)
-print("Scholar Search: ", scholar_res)
-print("\n")
-merged_content = searches + scholar_res
-summarized_content = summarizer_func(merged_content)
-print("Summarized:", summarized_content)
+# searches = serp_search(query)
+# print("Searches: ", searches)
+# print("\n")
+# scholar_res = scholar_search(query)
+# print("Scholar Search: ", scholar_res)
+# print("\n")
+# merged_content = searches + scholar_res
+# print(merged_content)
+# # summarized_content = summarizer_func(merged_content)
+# # print("Summarized:", summarized_content)

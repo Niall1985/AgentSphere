@@ -23,8 +23,8 @@ Only return the properly structured and refined content.
 """
 def run(history, message):
     serp_content = serp_search(message)
-    scholar_content = scholar_search(message)
+    # scholar_content = scholar_search(message)
     wiki_content = extract_wiki_data(message)
-    content = serp_content + scholar_content + wiki_content
-    summarized_content = summarizer_func(content)
-    return llm_model(history, summarized_content, SYSTEM_PROMPT)
+    content = serp_content + wiki_content
+    # summarized_content = summarizer_func(content)
+    return llm_model(history, content, SYSTEM_PROMPT)

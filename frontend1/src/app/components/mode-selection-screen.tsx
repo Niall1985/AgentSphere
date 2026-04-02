@@ -7,22 +7,29 @@ interface ModeSelectionScreenProps {
 export function ModeSelectionScreen({ onNavigate }: ModeSelectionScreenProps) {
   return (
     <div className="min-h-screen gradient-bg relative overflow-hidden">
-      {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[15%] right-[8%] w-96 h-96 rounded-full bg-white opacity-5 blur-3xl"></div>
         <div className="absolute bottom-[20%] left-[8%] w-96 h-96 rounded-full bg-[#a3a3a3] opacity-5 blur-3xl"></div>
       </div>
 
-      {/* Header */}
-      <div className="relative z-10 pt-8 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg glass-card glow-white flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
+
+      <div className="relative z-10 pt-8 px-6 border-b border-[#a3a3a3]/10">
+        <div className="max-w-7xl mx-auto pb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg glass-card glow-white flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-[#a3a3a3] bg-clip-text text-transparent">
+                AgentSphere
+              </h1>
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-[#a3a3a3] bg-clip-text text-transparent">
-              AgentSphere
-            </h1>
+            <button
+              onClick={() => onNavigate('landing')}
+              className="px-4 py-2 rounded-lg glass-card hover:glow-white transition-all text-[#a3a3a3] hover:text-white"
+            >
+              ← Logout
+            </button>
           </div>
         </div>
       </div>
