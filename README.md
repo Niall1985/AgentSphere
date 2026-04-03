@@ -79,6 +79,58 @@ To create a centralized, transparent, and scalable platform that seamlessly inte
 
 ---
 
+## Project directory
+AgentSphere/
+├── backend/
+│   ├── agent_test/
+│   │   ├── agent_loader.py
+│   │   ├── metrics_compute.py
+│   │   ├── orcherstrator.py
+│   │   ├── repo_clone.py
+│   │   └── test_exec.py
+│   ├── agents/
+│   │   ├── codeAssistAgent.py
+│   │   ├── dataAnalysisAgent.py
+│   │   └── researchAgent.py
+│   ├── authfiles/
+│   ├── tools/
+│   ├── app.py
+│   ├── Dockerfile
+│   ├── dockerfile.runner
+│   ├── main.py
+│   ├── requirements.txt
+│   ├── runner_entrypoint.sh
+│   └── sec.py
+├── design/
+├── frontend1/
+│   ├── src/
+│   │   └── app/
+│   │       └── components/
+│   │           ├── figma/
+│   │           ├── ui/
+│   │           ├── agent-interaction-screen.tsx
+│   │           ├── agent-selection-screen.tsx
+│   │           ├── agent-testing-screen.tsx
+│   │           ├── landing-screen.tsx
+│   │           ├── login-screen.tsx
+│   │           ├── mode-selection-screen.tsx
+│   │           └── signup-screen.tsx
+│   │   App.tsx
+│   │   main.tsx
+│   ├── styles/
+│   ├── Dockerfile
+│   ├── index.html
+│   ├── package.json
+│   ├── postcss.config.mjs
+│   └── vite.config.ts
+├── .env
+├── .gitignore
+├── docker-compose.yml
+├── index.html
+└── README.md
+
+---
+
 ## Workflow
 
 ### User Workflow
@@ -161,7 +213,7 @@ git push origin feature/agent-evaluation
 
 ## Docker Setup
 
-AgentSphere is containerized using Docker to ensure consistent execution environments for agents and platform services.
+AgentSphere wll be containerized using Docker to ensure consistent execution environments for agents and platform services.
 
 ### Prerequisites
 - Docker (v20+)
