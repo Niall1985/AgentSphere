@@ -6,9 +6,9 @@ import time
 import re
 from datetime import datetime, timedelta
 from email.mime.text import MIMEText
-from fastapi import Header
+
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -18,6 +18,7 @@ from jose import JWTError, jwt
 import docker
 import psutil
 import threading
+
 from tools.memory_tool import add_message, get_memory
 from agents import codeAssistAgent, researchAgent
 
@@ -177,6 +178,9 @@ class LoginRequest(BaseModel):
     email: str
     password: str
 
+class LogoutRequest(BaseModel):
+    token: str
+
 class RepoRequest(BaseModel):
     repo_url: str
 
@@ -218,11 +222,15 @@ def login(req: LoginRequest):
     return login_user(req.email, req.password)
 
 
+@app.post("/logout")
+def logout(req: LogoutRequest):
+    verify_access_token(req.token)
+    return logout_user(req.token)
+
+
 @app.get("/test-agent/stream")
 def test_agent_stream(repo_url: str, token: str):
     verify_access_token(token)
-
-
 
     if not repo_url.startswith("https://github.com/"):
         raise HTTPException(status_code=400, detail="Invalid repository URL")
@@ -250,7 +258,29 @@ def test_agent_stream(repo_url: str, token: str):
 
             yield emit({"type": "status", "message": f"Container started (ID: {container.short_id})"})
 
+            # --- start monitor BEFORE waiting ---
+            performance = []
+            container_done = threading.Event()
+
+            def collect_metrics():
+                while not container_done.is_set():
+                    cpu = psutil.cpu_percent(interval=1)
+                    memory = psutil.virtual_memory().percent
+                    performance.append({
+                        "time": round(time.time() - start, 2),
+                        "cpu": cpu,
+                        "memory": memory
+                    })
+
+            monitor_thread = threading.Thread(target=collect_metrics, daemon=True)
+            monitor_thread.start()
+
+            # single wait — monitor collects during this
             container.wait()
+
+            container_done.set()
+            monitor_thread.join()
+            # ------------------------------------
 
             logs_output = container.logs().decode()
             raw_lines = logs_output.split("\n")
@@ -258,15 +288,14 @@ def test_agent_stream(repo_url: str, token: str):
             for text in raw_lines:
                 if not text:
                     continue
-
                 level = "error" if ("FAILED" in text or "ERROR" in text) else "info"
-
                 yield emit({
                     "type": "log",
                     "time": round(time.time() - start, 2),
                     "level": level,
                     "message": text,
                 })
+
             container.reload()
             exit_code = container.attrs["State"]["ExitCode"]
             container.remove()
@@ -281,9 +310,7 @@ def test_agent_stream(repo_url: str, token: str):
             failed = int(failed_match.group(1)) if failed_match else 0
             total = passed + failed
 
-            tests = [
-                {"name": "Agent Tests", "passed": passed, "failed": failed}
-            ]
+            tests = [{"name": "Agent Tests", "passed": passed, "failed": failed}]
 
             metrics = {
                 "success_rate": round((passed / total) * 100, 2) if total else 0,
@@ -293,49 +320,11 @@ def test_agent_stream(repo_url: str, token: str):
                 "avg_response": round((time.time() - start) * 1000, 2)
             }
 
-            # send test results
-            yield emit({
-                "type": "tests",
-                "payload": tests
-            })
+            yield emit({"type": "tests", "payload": tests})
 
-            # fake performance data
-            performance = [
-                {"time": 1, "cpu": 12},
-                {"time": 2, "cpu": 20},
-                {"time": 3, "cpu": 15},
-                {"time": 4, "cpu": 30},
-            ]
-
-            # performance = []
-
-            # def collect_metrics():
-            #     while not container_done.is_set():
-            #         cpu = psutil.cpu_percent(interval=1)
-            #         memory = psutil.virtual_memory().percent
-            #         performance.append({
-            #             "time": round(time.time() - start, 2),
-            #             "cpu": cpu,
-            #             "memory": memory
-            #         })
-
-            # container_done = threading.Event()
-            # monitor_thread = threading.Thread(target=collect_metrics, daemon=True)
-            # monitor_thread.start()
-
-            # container.wait()  # blocks until container finishes
-
-            # container_done.set()
-            # monitor_thread.join()
-
-            # stream each point
             for point in performance:
-                yield emit({
-                    "type": "performance",
-                    "payload": point
-                })
+                yield emit({"type": "performance", "payload": point})
 
-            # final metrics
             yield emit({
                 "type": "result",
                 "exit_code": exit_code,
@@ -351,11 +340,6 @@ def test_agent_stream(repo_url: str, token: str):
             yield emit({"type": "error", "message": str(e)})
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")
-
-@app.post("/logout")
-def logout(authorization: str = Header(...)):
-    token = authorization.replace("Bearer ", "")
-    return logout_user(token)
 
 # from fastapi import FastAPI, HTTPException
 # from fastapi import FastAPI, HTTPException

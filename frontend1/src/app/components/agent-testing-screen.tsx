@@ -602,7 +602,7 @@ export function AgentTestingScreen({ onNavigate }: AgentTestingScreenProps) {
 
                     <CartesianGrid strokeDasharray="3 3" stroke="#444" />
 
-                    <XAxis dataKey="time" stroke="#aaa" tick={{ fill: '#aaa' }} />
+                    <XAxis dataKey="time" stroke="#aaa" tick={{ fill: '#aaa' }} tickFormatter={(val) => `${val}s`} />
                     <YAxis stroke="#aaa" tick={{ fill: '#aaa' }} />
 
                     <Tooltip
