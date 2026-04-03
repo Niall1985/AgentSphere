@@ -80,6 +80,7 @@ To create a centralized, transparent, and scalable platform that seamlessly inte
 ---
 
 ## Project directory
+```
 AgentSphere/
 ├── backend/
 │   ├── agent_test/
@@ -128,7 +129,7 @@ AgentSphere/
 ├── docker-compose.yml
 ├── index.html
 └── README.md
-
+```
 ---
 
 ## Workflow
