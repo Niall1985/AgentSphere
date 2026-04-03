@@ -16,7 +16,8 @@ from passlib.hash import bcrypt
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 import docker
-
+import psutil
+import threading
 from tools.memory_tool import add_message, get_memory
 from agents import codeAssistAgent, researchAgent
 
@@ -249,19 +250,6 @@ def test_agent_stream(repo_url: str, token: str):
 
             yield emit({"type": "status", "message": f"Container started (ID: {container.short_id})"})
 
-            # raw_lines = []
-            # for line in container.logs(stream=True, follow=True):
-            #     text = line.decode("utf-8").strip()
-            #     if not text:
-            #         continue
-            #     raw_lines.append(text)
-            #     level = "error" if ("FAILED" in text or "ERROR" in text) else "info"
-            #     yield emit({
-            #         "type": "log",
-            #         "time": round(time.time() - start, 2),
-            #         "level": level,
-            #         "message": text,
-            #     })
             container.wait()
 
             logs_output = container.logs().decode()
@@ -318,6 +306,27 @@ def test_agent_stream(repo_url: str, token: str):
                 {"time": 3, "cpu": 15},
                 {"time": 4, "cpu": 30},
             ]
+
+            # performance = []
+
+            # def collect_metrics():
+            #     while not container_done.is_set():
+            #         cpu = psutil.cpu_percent(interval=1)
+            #         memory = psutil.virtual_memory().percent
+            #         performance.append({
+            #             "time": round(time.time() - start, 2),
+            #             "cpu": cpu,
+            #             "memory": memory
+            #         })
+
+            # container_done = threading.Event()
+            # monitor_thread = threading.Thread(target=collect_metrics, daemon=True)
+            # monitor_thread.start()
+
+            # container.wait()  # blocks until container finishes
+
+            # container_done.set()
+            # monitor_thread.join()
 
             # stream each point
             for point in performance:
