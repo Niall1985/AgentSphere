@@ -6,7 +6,7 @@ import time
 import re
 from datetime import datetime, timedelta
 from email.mime.text import MIMEText
-
+import docker
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,7 +15,6 @@ from pydantic import BaseModel
 from passlib.hash import bcrypt
 from passlib.context import CryptContext
 from jose import JWTError, jwt
-import docker
 import psutil
 import threading
 
